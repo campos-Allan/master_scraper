@@ -18,7 +18,7 @@ from openpyxl import load_workbook
 warnings.filterwarnings("ignore")
 
 
-def sap(cod: str) -> None:
+def sap(cod: str):
     """bot to get data from a software
 
     Args:
@@ -144,7 +144,7 @@ def sap(cod: str) -> None:
             "Sucesso", "Coloque SINOP no filtro, salve o arquivo na mesma pasta desse programa")
 
 
-def excel_write(dic_descarga: dict, action: str) -> None:
+def excel_write(dic_descarga: dict, action: str):
     """write data extracted from pdf and excel files in "registro.xlxs" 
 
     Args:
@@ -199,7 +199,7 @@ def excel_write(dic_descarga: dict, action: str) -> None:
     messagebox.showinfo("Sucesso", "Informação inserida com sucesso")
 
 
-def pdf_reader(operador: str) -> None:
+def pdf_reader(operador: str):
     """read pdf files
 
     Args:
@@ -403,7 +403,7 @@ def pdf_reader(operador: str) -> None:
     return (estoque, df_teciap, dic_descarga, linhas_descarga, modal, mov_tct, carga)
 
 
-def excel_reader(operador: str) -> None:
+def excel_reader(operador: str):
     """read excel files
 
     Args:
