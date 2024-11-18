@@ -1,7 +1,7 @@
 # pdf-and-excel-scraping
 
 ## Resumo
-Desenvolvi esse programa para automatizar uma tarefa repetitiva de buscar valores diariamente em 5 arquivos de PDF diferente e 3 planilhas de Excel, para no fim formatar tudo de uma certa maneira e inserir numa grande planilha de Excel. 
+Desenvolvi esse programa para automatizar uma tarefa repetitiva de buscar valores diariamente em 5 arquivos de PDF e 3 planilhas de Excel, para no fim formatar tudo de uma certa maneira e inserir numa grande planilha de Excel. 
 
 ## Disclaimer
 Não é possível compartilhar os arquivos de pdf e excel que esse script estava buscando, mas posso dizer que os arquivos não eram limpos e tinham pouca padronização, por isso a tarefa acabou se mostrando mais complicada do que eu esperava.
