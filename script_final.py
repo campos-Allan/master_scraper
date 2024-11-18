@@ -1,6 +1,5 @@
 """pdf scraping and excel formatting
 """
-# CRIAR MÉTODO PRA ENUMERAR DESCARREGAMENTOS QUE NÃO FORAM COLOCADOS NA PLANILHA
 import time
 import datetime
 from datetime import timedelta
@@ -18,7 +17,7 @@ from openpyxl import load_workbook
 warnings.filterwarnings("ignore")
 
 
-def sap(cod: str):
+def sap(cod: str) -> None:
     """bot to get data from a software
 
     Args:
@@ -144,7 +143,7 @@ def sap(cod: str):
             "Sucesso", "Coloque SINOP no filtro, salve o arquivo na mesma pasta desse programa")
 
 
-def excel_write(dic_descarga: dict, action: str):
+def excel_write(dic_descarga: dict, action: str) -> None:
     """write data extracted from pdf and excel files in "registro.xlxs" 
 
     Args:
@@ -199,7 +198,7 @@ def excel_write(dic_descarga: dict, action: str):
     messagebox.showinfo("Sucesso", "Informação inserida com sucesso")
 
 
-def pdf_reader(operador: str):
+def pdf_reader(operador: str) -> None:
     """read pdf files
 
     Args:
@@ -240,7 +239,7 @@ def pdf_reader(operador: str):
             df_teciap[df_teciap.columns[1]] = df_teciap[df_teciap.columns[1]].replace(
                 '0 0', '0').astype(float)
             for i in range(0, len(df_teciap[df_teciap.columns[2]])):
-                if len(df_teciap[df_teciap.columns[2]][i]) > 7:
+                if len(str(df_teciap[df_teciap.columns[2]][i])) > 7:
                     df_teciap[df_teciap.columns[2]][i] = df_teciap[df_teciap.columns[2]][i].replace(
                         '.', '', 1)
             df_teciap[df_teciap.columns[2]
@@ -267,7 +266,8 @@ def pdf_reader(operador: str):
                 placa = descarga_teciap[descarga_teciap.columns[-4]
                                         ][:-1].str.replace('-', '')
                 dia = descarga_teciap[descarga_teciap.columns[0]][:-1]
-                motor = descarga_teciap[descarga_teciap.columns[3]][:-1]
+                coluna_certa=[i for i in descarga_teciap.columns if i[0:7]!="Unnamed" ]
+                motor = descarga_teciap[coluna_certa[0]][:-1]
                 if 'RUMO' in motor[0]:
                     vol_carga = descarga_teciap[descarga_teciap.columns[-4]][:-1]
                     vol_descarga = descarga_teciap[descarga_teciap.columns[-3]][:-1]
@@ -310,7 +310,7 @@ def pdf_reader(operador: str):
                     if l.split('\t')[1] == dia[-1]:
                         if k.split('\t')[0] == 'GASOA':
                             if 'VAGAO' in k.split('\t')[2]:
-                                modal['fe_GASOA'] = modal['fe_GASOA'] + \
+                                modal['fe_GASOA'] =modal['fe_GASOA'] + \
                                     float(l.split('\t')[2])
                             else:
                                 modal['ro_GASOA'] = modal['ro_GASOA'] + \
@@ -403,7 +403,7 @@ def pdf_reader(operador: str):
     return (estoque, df_teciap, dic_descarga, linhas_descarga, modal, mov_tct, carga)
 
 
-def excel_reader(operador: str):
+def excel_reader(operador: str) -> None:
     """read excel files
 
     Args:
@@ -412,13 +412,13 @@ def excel_reader(operador: str):
     try:
         workbook = Workbook()
         dicionario_totais = {}
-        nova_descarga = ''
+        nova_descarga = pd.DataFrame()
+        mov_dtc = ''
+        mov_sinop= ''
         if operador == 'SINOP':
             workbook = load_workbook(filename='Planilha em Basis (2).xlsx')
-            mov_sinop = ''
         else:
             workbook = load_workbook(filename='Planilha em Basis (1).xlsx')
-            mov_dtc = ''
         for i in workbook.sheetnames:
             ind = 1
             sheet = workbook[i]
@@ -445,19 +445,22 @@ def excel_reader(operador: str):
                         motorista = sheet[f'G{j}'].value
                         if operador == 'RV':
                             mov_dtc = mov_dtc + \
-                                f'{dia}\tSenador Canedo\tRio Verde\trodoviário\t{
-                                    placa}\t{produto}\t{vol_carga}\t\t\t\t\t{motorista}\n'
+                                f'{dia}\tSenador Canedo\tRio Verde\trodoviário\t{placa}\t{produto}\t{vol_carga}\t\t\t\t\t{motorista}\n'
                         elif operador == 'SINOP':
                             mov_sinop = mov_sinop + \
-                                f'{dia}\tRondonópolis\tSinop\trodoviário\t{placa}\t{
-                                    produto}\t{vol_carga}\t\t\t\t\t{motorista}\n'
+                                f'{dia}\tRondonópolis\tSinop\trodoviário\t{placa}\t{produto}\t{vol_carga}\t\t\t\t\t{motorista}\n'
     except FileNotFoundError:
-        return 'Sem entradas'
+        if operador=='SINOP':
+            return 'Sem entradas'
+        else:
+            messagebox.showinfo(
+            "Aviso", "Sem arquivo de Saidas de Senador Canedo, pressione OK para ler apenas arquivos DTC")
     if operador == 'SINOP':
         return (dicionario_totais, mov_sinop)
     mypath = os.getcwd()
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     dic_descarga = {}
+    df_dtc=pd.DataFrame()
     for i in onlyfiles:
         nome = i
         i = i.upper()
@@ -499,4 +502,7 @@ def excel_reader(operador: str):
             metade_2 = metade_2.stack().groupby(level=0).apply('\t'.join).to_dict()
             for i, j in metade_1.items():
                 dic_descarga[j] = metade_2[i]
-    return (dicionario_totais, mov_dtc, df_dtc, nova_descarga, dic_descarga)
+    if (dicionario_totais, mov_dtc,dic_descarga)==({},'',{}) and df_dtc.empty and nova_descarga.empty:
+        return 'Sem dados'
+    else:
+        return (dicionario_totais, mov_dtc, df_dtc, nova_descarga, dic_descarga)
