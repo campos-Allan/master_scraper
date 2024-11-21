@@ -414,7 +414,7 @@ def nova(function, polo):
                         new_saldos_dtc.append(
                             str(i)[0]+'.'+str(i)[1:4]+'.'+str(i)[-3:])
                     elif len(str(i)) < 7 and len(str(i)) > 3:
-                        new_saldos_dtc.append(str(i)[0]+'.'+str(i)[1:])
+                        new_saldos_dtc.append(str(i)[0:3]+'.'+str(i)[-3:])
                     else:
                         new_saldos_dtc.append(str(i))
                 saldo2_gasoa.config(text=new_saldos_dtc[0])
@@ -442,16 +442,19 @@ def nova(function, polo):
         saida_rondo = resultado_rondo[-1]
         total_teciap = resultado_rondo[1]
         divisao_modal = resultado_rondo[-3]
-
-        valores_teciap = [
-            '%.3f' % n for n in total_teciap[total_teciap.columns[2]].to_list()]
-        for i in range(0, len(valores_teciap)):
-            if len(valores_teciap[i]) > 7:
-                valores_teciap[i] = valores_teciap[i][0] + \
-                    '.'+valores_teciap[i][1:]
-        mercado_teciap = [
-            '%.3f' % n for n in total_teciap[total_teciap.columns[1]].to_list()]
-        mercado_teciap = [i.replace('0.000', '0') for i in mercado_teciap]
+        if total_teciap.empty:
+            valores_teciap=[0,0,0]
+            mercado_teciap=[0,0,0]
+        else:
+            valores_teciap = [
+                '%.3f' % n for n in total_teciap[total_teciap.columns[2]].to_list()]
+            for i in range(0, len(valores_teciap)):
+                if len(valores_teciap[i]) > 7:
+                    valores_teciap[i] = valores_teciap[i][0] + \
+                        '.'+valores_teciap[i][1:]
+            mercado_teciap = [
+                '%.3f' % n for n in total_teciap[total_teciap.columns[1]].to_list()]
+            mercado_teciap = [i.replace('0.000', '0') for i in mercado_teciap]
         main_label1.config(text='Entrada TCT')
         main_label2.config(text='Saída TCT Ferroviário')
         main_label3.config(text='Entrada TECIAP - Rodoviário')
