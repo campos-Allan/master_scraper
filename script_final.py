@@ -276,21 +276,30 @@ def pdf_reader(operador: str) -> None:
                 for i in range(0, len(descarga_teciap[:-1])):
                     if 'RUMO' in motor[i]:
                         motor[i] = 'VAGAO-INDEFINIDO'
-                    if len(str(vol_carga[i])) < 6:
+                    if (len(str(vol_carga[i])) < 6) & (len(str(vol_descarga[i])) < 6):
+                        novo_vol_carga = str(
+                            vol_carga[i])+'0'*(6-len(str(vol_carga[i])))
+                        novo_vol_descarga = str(
+                            vol_descarga[i])+'0'*(6-len(str(vol_descarga[i])))
+                        dic_descarga[chave+'\t'+novo_vol_carga+'\t'+motor[i].split(
+                            ' ')[0]] = placa[i]+'\t'+dia[i]+'\t'+novo_vol_descarga
+                        linhas_descarga.append(chave+'\t'+novo_vol_carga+'\t'+motor[i].split(' ')[
+                            0]+'\t'+dia[i]+'\t'+placa[i]+'\t'+novo_vol_descarga)                        
+                    elif len(str(vol_carga[i])) < 6:
                         novo_vol_carga = str(
                             vol_carga[i])+'0'*(6-len(str(vol_carga[i])))
                         dic_descarga[chave+'\t'+novo_vol_carga+'\t'+motor[i].split(
                             ' ')[0]] = placa[i]+'\t'+dia[i]+'\t'+str(vol_descarga[i])
                         linhas_descarga.append(chave+'\t'+novo_vol_carga+'\t'+motor[i].split(' ')[
                             0]+'\t'+dia[i]+'\t'+placa[i]+'\t'+str(vol_descarga[i]))
-                    if len(str(vol_descarga[i])) < 6:
+                    elif len(str(vol_descarga[i])) < 6:
                         novo_vol_descarga = str(
                             vol_descarga[i])+'0'*(6-len(str(vol_descarga[i])))
                         dic_descarga[chave+'\t'+str(vol_carga[i])+'\t'+motor[i].split(
                             ' ')[0]] = placa[i]+'\t'+dia[i]+'\t'+novo_vol_descarga
                         linhas_descarga.append(chave+'\t'+str(vol_carga[i])+'\t'+motor[i].split(
                             ' ')[0]+'\t'+dia[i]+'\t'+placa[i]+'\t'+novo_vol_descarga)
-                    if novo_vol_carga == 0 and novo_vol_descarga == 0:
+                    elif novo_vol_carga == 0 and novo_vol_descarga == 0:
                         dic_descarga[chave+'\t'+str(vol_carga[i])+'\t'+motor[i].split(
                             ' ')[0]] = placa[i]+'\t'+dia[i]+'\t'+str(vol_descarga[i])
                         linhas_descarga.append(chave+'\t'+str(vol_carga[i])+'\t'+motor[i].split(
