@@ -559,7 +559,8 @@ def nova(function, polo):
 
         entrada_teciap = [str(i).replace('0.0', '0')
                           for i in total_teciap[total_teciap.columns[0]]]
-
+        entrada_teciap = [i.replace('000','0') for i in entrada_teciap]
+        
         if divisao_modal == '':
             text_gasoa3.insert(
                 END, entrada_teciap[0])
