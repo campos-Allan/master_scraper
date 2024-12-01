@@ -24,31 +24,39 @@ def sap(cod: str) -> None:
         cod (str): sector code, should be 1120 or 1109
     """
     now = datetime.datetime.now()
-    ano_sexta = 0
-    if now.today().weekday() == 0:
-        sexta = now - timedelta(days=3)
-        segunda = 'yes'
-        ano_sexta = str(sexta.year)
-        dia_sexta = str(sexta.day)
-        mes_sexta = str(sexta.month)
-        if len(mes_sexta) == 1:
-            mes_sexta = '0'+mes_sexta
 
-        if len(dia_sexta) == 1:
-            dia_sexta = '0'+dia_sexta
+    feriado = input('Pressione S para feriado: ')
 
+    if now.today().weekday() == 0 or feriado=='S':
+        atras = 'yes'
+        if now.today().weekday() != 0:
+            dias = int(input('Quantos dias: '))
+            voltando = now - timedelta(days=dias)
+            ano_atras = str(voltando.year)
+            dia_atras = str(voltando.strftime('%d'))
+            mes_atras = str(voltando.strftime('%m'))
+        elif now.today().weekday() == 0 and feriado=='S':
+            dias = int(input('Quantos dias: '))
+            voltando = now - timedelta(days=3+dias)
+            ano_atras = str(voltando.year)
+            dia_atras = str(voltando.strftime('%d'))
+            mes_atras = str(voltando.strftime('%m'))
+        else:
+            voltando = now - timedelta(days=3)
+            ano_atras = str(voltando.year)
+            dia_atras = str(voltando.strftime('%d'))
+            mes_atras = str(voltando.strftime('%m'))
     else:
-        segunda = 'no'
+        atras = 'no'
+        dias = 0
+        ano_atras = 0
+        dia_atras = 0
+        mes_atras = 0
+
     ontem = now - timedelta(days=1)
     ano = str(ontem.year)
-    dia = str(ontem.day)
-    mes = str(ontem.month)
-
-    if len(mes) == 1:
-        mes = '0'+mes
-
-    if len(dia) == 1:
-        dia = '0'+dia
+    dia = str(ontem.strftime('%d'))
+    mes = str(ontem.strftime('%m'))
     pyautogui.click(730, 1050)
     time.sleep(7)
     pyautogui.click(50, 135)
@@ -64,10 +72,10 @@ def sap(cod: str) -> None:
     time.sleep(2)
     pyautogui.typewrite(cod)
     pyautogui.click(700, 700)
-    if segunda == 'yes':
+    if atras == 'yes':
         pyautogui.click(500, 300)
         time.sleep(1)
-        pyautogui.typewrite(f'{dia_sexta}.{mes_sexta}.{ano_sexta}')
+        pyautogui.typewrite(f'{dia_atras}.{mes_atras}.{ano_atras}')
         pyautogui.click(800, 300)
         time.sleep(1)
         pyautogui.typewrite(f'{dia}.{mes}.{ano}')
@@ -111,33 +119,25 @@ def sap(cod: str) -> None:
     pyautogui.getWindowsWithTitle("Planilha em Basis (1)")[0].maximize()
     time.sleep(1)
     if cod == '1120':
-        pyautogui.click(650, 105)
+        pyautogui.click(270, 100)
         time.sleep(1)
-        pyautogui.click(120, 220)
-        time.sleep(7)
-        pyautogui.click(1300, 640)
-        time.sleep(10)
-        pyautogui.click(230, 230)
-        time.sleep(5)
-        pyautogui.click(350, 150)
-        time.sleep(2)
-        pyautogui.click(1450, 730)
-        time.sleep(2)
-        pyautogui.moveTo(1370, 530, duration=1)
-        pyautogui.click(1370, 530)
-        time.sleep(2)
-        pyautogui.moveTo(1370, 600)
+        pyautogui.click(200, 170)
+        time.sleep(1)
+        pyautogui.click(1000, 450)
+        time.sleep(1)
+        pyautogui.click(1390, 960)
+        time.sleep(3)
+        pyautogui.moveTo(1470, 600, duration=1)
         pyautogui.mouseDown(button='right')
         pyautogui.mouseUp(button='right')
         time.sleep(1)
-        pyautogui.click(1380, 610)
+        pyautogui.click(1490, 620)
         time.sleep(1)
-        pyautogui.scroll(-10000)
-        time.sleep(1)
-        pyautogui.click()
-        time.sleep(1)
+        pyautogui.click(250, 370)
+        pyautogui.typewrite('DINAMICA TERMINAIS RIO VERDE S/A')
+        pyautogui.hotkey('enter')
         messagebox.showinfo(
-            "Sucesso", "Coloque Rio Verde no filtro, salve o arquivo na mesma pasta desse programa")
+            "Sucesso", "Salve o arquivo na mesma pasta desse programa")
     else:
         messagebox.showinfo(
             "Sucesso", "Coloque SINOP no filtro, salve o arquivo na mesma pasta desse programa")
@@ -217,7 +217,7 @@ def pdf_reader(operador: str) -> None:
     modal = ''
     estoque = ''
     df_teciap = pd.DataFrame()
-    linhas_descarga = ''
+    linhas_descarga = []
     mov_tct = ''
     carga = ''
     for i in onlyfiles:
@@ -252,7 +252,6 @@ def pdf_reader(operador: str) -> None:
             novo_vol_carga = 0
             novo_vol_descarga = 0
             chave = ''
-            linhas_descarga = []
             for i in range(1, len(arquivo)):
                 descarga_teciap = pd.DataFrame(arquivo[i])
                 if 'S10' in ' '.join(descarga_teciap.columns):
@@ -261,13 +260,20 @@ def pdf_reader(operador: str) -> None:
                     chave = 'DSL S500'
                 elif 'GASOLINA' in ' '.join(descarga_teciap.columns):
                     chave = 'GASOA'
-                vol_carga = descarga_teciap[descarga_teciap.columns[-3]][:-1]
                 vol_descarga = descarga_teciap[descarga_teciap.columns[-2]][:-1]
-                placa = descarga_teciap[descarga_teciap.columns[-4]
-                                        ][:-1].str.replace('-', '')
-                dia = descarga_teciap[descarga_teciap.columns[0]][:-1]
                 coluna_certa=[i for i in descarga_teciap.columns if i[0:7]!="Unnamed" ]
-                motor = descarga_teciap[coluna_certa[0]][:-1]
+                dia = descarga_teciap[descarga_teciap.columns[0]][:-1]
+                if vol_descarga[0]==20.0:
+                    vol_descarga = descarga_teciap[descarga_teciap.columns[-3]][:-1]
+                    vol_carga = descarga_teciap[descarga_teciap.columns[-4]][:-1]
+                    placa = descarga_teciap[descarga_teciap.columns[-5]
+                                            ][:-1].str.replace('-', '')
+                    motor = descarga_teciap[coluna_certa[0]][:-1].map(lambda x:x.split(' ')[1])
+                else:
+                    vol_carga = descarga_teciap[descarga_teciap.columns[-3]][:-1]
+                    placa = descarga_teciap[descarga_teciap.columns[-4]
+                                            ][:-1].str.replace('-', '')
+                    motor = descarga_teciap[coluna_certa[0]][:-1]
                 if 'RUMO' in motor[0]:
                     vol_carga = descarga_teciap[descarga_teciap.columns[-4]][:-1]
                     vol_descarga = descarga_teciap[descarga_teciap.columns[-3]][:-1]
@@ -284,7 +290,7 @@ def pdf_reader(operador: str) -> None:
                         dic_descarga[chave+'\t'+novo_vol_carga+'\t'+motor[i].split(
                             ' ')[0]] = placa[i]+'\t'+dia[i]+'\t'+novo_vol_descarga
                         linhas_descarga.append(chave+'\t'+novo_vol_carga+'\t'+motor[i].split(' ')[
-                            0]+'\t'+dia[i]+'\t'+placa[i]+'\t'+novo_vol_descarga)                        
+                            0]+'\t'+dia[i]+'\t'+placa[i]+'\t'+novo_vol_descarga)
                     elif len(str(vol_carga[i])) < 6:
                         novo_vol_carga = str(
                             vol_carga[i])+'0'*(6-len(str(vol_carga[i])))
@@ -301,9 +307,9 @@ def pdf_reader(operador: str) -> None:
                             ' ')[0]+'\t'+dia[i]+'\t'+placa[i]+'\t'+novo_vol_descarga)
                     elif novo_vol_carga == 0 and novo_vol_descarga == 0:
                         dic_descarga[chave+'\t'+str(vol_carga[i])+'\t'+motor[i].split(
-                            ' ')[0]] = placa[i]+'\t'+dia[i]+'\t'+str(vol_descarga[i])
+                            ' ')[0]] = placa[i]+'\t'+dia[i]+'\t'+str(format(vol_descarga[i],'.3f'))
                         linhas_descarga.append(chave+'\t'+str(vol_carga[i])+'\t'+motor[i].split(
-                            ' ')[0]+'\t'+dia[i]+'\t'+placa[i]+'\t'+str(vol_descarga[i]))
+                            ' ')[0]+'\t'+dia[i]+'\t'+placa[i]+'\t'+str(format(vol_descarga[i],'.3f')))
                     novo_vol_carga = 0
                     novo_vol_descarga = 0
             op_saldo = 'N'
@@ -402,8 +408,8 @@ def pdf_reader(operador: str) -> None:
             carga = pd.DataFrame(data=(0), index=(
                 'ferroviário', 'rodoviário'), columns=('GASOA', 'DSL S500', 'DSL S10'))
             for i in range(0, len(df)):
-                carga[df.iloc[i]['Combustível']][df.iloc[i]['Modal']] = str(
-                    df['Vol_carga']).split('\n')[i].split(' ')[-1]
+                carga[df.iloc[i]['Combustível']][df.iloc[i]['Modal']] = str(format(float(str(
+                    df['Vol_carga']).split('\n')[i].split(' ')[-1]),'.3f'))
             carga.replace(to_replace=0.000, value='0', inplace=True)
             carga = carga.astype(str)
             realizado = pd.DataFrame(columns=('Dia_carga', 'Origem', 'Destino', 'Modal', 'ID_carga',
