@@ -114,7 +114,7 @@ def nova(function, polo):
 
     def copiar_ferro():
         pyperclip.copy(text_gasoa2.get('1.0', END).strip()+'\t' +
-                       text_s500_2.get('1.0', END).strip() + '\t' + text_s10_2.get('1.0', END).strip())
+                       text_s500_2.get('1.0', END).strip() +'\t'+ text_s10_2.get('1.0', END).strip())
         aviso1 = Label(nova_janela, text='Copiado!')
         aviso1.grid(column=2, row=7)
 
@@ -194,9 +194,9 @@ def nova(function, polo):
         descarga.grid(column=0, row=0)
         if function == "excel" and polo == 'RV':
             descarga.insert(END, resultado_rv[3].to_string(
-                index=False, header=False).replace(' DSL S10', 'DSL S10').replace(
-                    '   GASOA', 'GASOA'
-            ))
+                index=False, header=False).replace(' DSL S10','DSL S10').replace(
+                    '   GASOA','GASOA'
+                ))
             pergunta = messagebox.askyesno(
                 "Descarregamento", "Inserir descarregamentos no 'registro.xlxs'?")
             if pergunta:
@@ -207,7 +207,7 @@ def nova(function, polo):
                         "Error", f'{e},{e.args}')
         elif function == 'pdf':
             descarga.insert(END, "\n".join(
-                [i+'\t'+j for i, j in resultado_rondo[2].items()]))
+                [i for i in resultado_rondo[3]]))
             pergunta = messagebox.askyesno(
                 "Descarregamento", "Inserir descarregamentos no 'registro.xlxs'?")
             if pergunta:
@@ -393,14 +393,14 @@ def nova(function, polo):
                 text_s500_1.configure(state="disabled")
 
                 entradas_dtc = pd.concat([resultado_rv[2]['Unnamed: 3'][2:8].iloc[0:2],
-                                          resultado_rv[2]['Unnamed: 3'][2:8].iloc[-1:]],
-                                         axis=0).to_list()
+                                        resultado_rv[2]['Unnamed: 3'][2:8].iloc[-1:]],
+                                        axis=0).to_list()
                 saidas_dtc = pd.concat([resultado_rv[2]['Unnamed: 5'][2:8].iloc[0:2],
                                         resultado_rv[2]['Unnamed: 5'][2:8].iloc[-1:]],
-                                       axis=0).to_list()
+                                        axis=0).to_list()
                 saldos_dtc = pd.concat([resultado_rv[2]['Unnamed: 9'][2:8].iloc[0:2],
                                         resultado_rv[2]['Unnamed: 9'][2:8].iloc[-1:]],
-                                       axis=0).to_list()
+                                        axis=0).to_list()
 
                 text_gasoa3.insert(END, entradas_dtc[0])
                 text_s500_3.insert(END, entradas_dtc[1])
@@ -408,12 +408,11 @@ def nova(function, polo):
                 text_gasoa4.insert(END, saidas_dtc[0])
                 text_s500_4.insert(END, saidas_dtc[1])
                 text_s10_4.insert(END, saidas_dtc[2])
-                new_saldos_dtc = []
+                new_saldos_dtc=[]
                 for i in saldos_dtc:
-                    if len(str(i)) > 6:
-                        new_saldos_dtc.append(
-                            str(i)[0]+'.'+str(i)[1:4]+'.'+str(i)[-3:])
-                    elif len(str(i)) < 7 and len(str(i)) > 3:
+                    if len(str(i))>6:
+                        new_saldos_dtc.append(str(i)[0]+'.'+str(i)[1:4]+'.'+str(i)[-3:])
+                    elif len(str(i))<7 and len(str(i))>3:
                         new_saldos_dtc.append(str(i)[0:3]+'.'+str(i)[-3:])
                     else:
                         new_saldos_dtc.append(str(i))
@@ -454,7 +453,7 @@ def nova(function, polo):
                         '.'+valores_teciap[i][1:]
             mercado_teciap = [
                 '%.3f' % n for n in total_teciap[total_teciap.columns[1]].to_list()]
-            mercado_teciap = [i.replace('0.000', '0') for i in mercado_teciap]
+            mercado_teciap = [i.replace('0.000','0') for i in mercado_teciap]
         main_label1.config(text='Entrada TCT')
         main_label2.config(text='Saída TCT Ferroviário')
         main_label3.config(text='Entrada TECIAP - Rodoviário')
@@ -513,8 +512,8 @@ def nova(function, polo):
             text_gasoa2.insert(END, saida_rondo.iloc[0][:][0])
             text_gasoa5.insert(END, saida_rondo.iloc[1][:][0])
         except AttributeError:
-            text_gasoa2.insert(END, 0)
-            text_gasoa5.insert(END, 0)
+            text_gasoa2.insert(END,0)
+            text_gasoa5.insert(END,0)
 
         text_gasoa6.insert(END, mercado_teciap[0])
 
@@ -556,11 +555,8 @@ def nova(function, polo):
             saldo1_gasoa.config(text='Sem arquivo TCT')
             saldo1_s10.config(text='Sem arquivo TCT')
             saldo1_s500.config(text='Sem arquivo TCT')
-
-        entrada_teciap = [str(i).replace('0.0', '0')
-                          for i in total_teciap[total_teciap.columns[0]]]
+        entrada_teciap = [str(format(i,'.3f')).replace('0.0','0') for i in total_teciap[total_teciap.columns[0]]]
         entrada_teciap = [i.replace('000','0') for i in entrada_teciap]
-        
         if divisao_modal == '':
             text_gasoa3.insert(
                 END, entrada_teciap[0])
@@ -570,18 +566,15 @@ def nova(function, polo):
                 END, entrada_teciap[2])
         else:
             text_gasoa4.insert(
-                END, str(format(divisao_modal['fe_GASOA'], '.3f')).replace('0.000', '0'))
+                END,str(format(divisao_modal['fe_GASOA'],'.3f')).replace('0.000','0'))
             text_s500_4.insert(
-                END, str(format(divisao_modal['fe_DSL500'], '.3f')).replace('0.000', '0'))
+                END, str(format(divisao_modal['fe_DSL500'],'.3f')).replace('0.000','0'))
             text_s10_4.insert(
-                END, str(format(divisao_modal['fe_DSL10'], '.3f')).replace('0.000', '0'))
+                END, str(format(divisao_modal['fe_DSL10'],'.3f')).replace('0.000','0'))
 
-            text_gasoa3.insert(
-                END, str(format(divisao_modal['ro_GASOA'], '.3f')).replace('0.000', '0'))
-            text_s500_3.insert(
-                END, str(format(divisao_modal['ro_DSL500'], '.3f')).replace('0.000', '0'))
-            text_s10_3.insert(
-                END, str(format(divisao_modal['ro_DSL10'], '.3f')).replace('0.000', '0'))
+            text_gasoa3.insert(END, str(format(divisao_modal['ro_GASOA'],'.3f')).replace('0.000','0'))
+            text_s500_3.insert(END, str(format(divisao_modal['ro_DSL500'],'.3f')).replace('0.000','0'))
+            text_s10_3.insert(END, str(format(divisao_modal['ro_DSL10'],'.3f')).replace('0.000','0'))
 
         text_gasoa1.configure(state="disabled")
         text_gasoa2.configure(state="disabled")
