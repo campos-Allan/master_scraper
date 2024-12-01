@@ -1,25 +1,22 @@
 # pdf-and-excel-scraping
 
-## Resumo
-Desenvolvi esse programa para automatizar uma tarefa repetitiva de buscar valores diariamente em 5 arquivos de PDF e 3 planilhas de Excel, para no fim formatar tudo de uma certa maneira e inserir numa grande planilha de Excel. 
-
 ## Disclaimer
-Não é possível compartilhar os arquivos de pdf e excel que esse script estava buscando, mas posso dizer que os arquivos não eram limpos e tinham pouca padronização, por isso a tarefa acabou se mostrando mais complicada do que eu esperava.
+It’s not possible to share the PDF and Excel files that this script was fetching, but I can tell you that the files were not clean and lacked standardization, which made the task more complicated than I initially expected.
 
-## Estrutura
-* `app.py` -> GUI básica para tornar rodar esse script mais acessível.
-* `script_final.py` -> Faz o trabalho sujo
-  * sap(cod): um bot feito com pyautogui para gerar planilhas dentro de um software usado para buscar informações, variável COD altera o polo que será buscado.
-  * excel_write(dic_descarga: dict, action: str): parte dos dados extraidos precisavam ser inseridos pela primeira vez no excel, e a outra parte precisava ser inserida nas informações que já estavam lá, a fim de atualizar elas. dic_descarga é justamente uma variável com os valores antigos e a sua correspondência dos dados atualizados. action determina se a função vai somente inserir dados novos, ou vai verificar a planilha para atualizar o que está lá.
-  * pdf_reader(operador: str): faz leitura e extração dos PDF's, de início tentei usar read_pdf da biblioteca tabula e passar para um DataFrame, mas alguns PDF'S não passavam todas as informações dessa forma, por isso tive que usar PdfReader e ir buscando os valores numa string gigante. Num escopo de trabalho com PDF's mais padronizados dá para enxugar bastante essa função.
-  * excel_reader(operador: str): faz leitura e extração de alguns arquivos de Excel, usei openpyxl sem grandes problemas, pois as planilhas eram bem mais padronizadas e com os dados 'limpos' para serem extraidos.
+## Structure
+* `app.py` -> Basic GUI to make running this script more accessible.
+* `script_final.py` -> Does the dirty work
+  * sap(cod): a bot created with PyAutoGUI to generate spreadsheets within a software used to fetch information. The COD variable changes the region to be searched.
+  * excel_write(dic_descarga: dict, action: str): part of the extracted data needed to be inserted into Excel for the first time, while the other part had to be added to already existing information to update it. dic_descarga is a variable with old values and their corresponding updated data. action determines whether the function will only insert new data or check the spreadsheet to update the existing information.
+  * pdf_reader(operador: str): reads and extracts data from PDF. Initially, I tried using read_pdf from the Tabula library and converting it to a DataFrame, but some PDFs didn't extract all the information this way, so I had to use PdfReader and search for values in a huge string. In a scenario with more standardized PDFs, this function could be streamlined a lot.
+  * excel_reader(operador: str): reads and extracts data from Excel files. I used openpyxl without major issues since the spreadsheets were much more standardized and with 'clean' data for extraction.
 
-## Abordagem
-* função sap: clica na tela em lugares específicos e digita valores a fim de navegar em um software e obter planilhas do Excel que serão lidas adiante, e que devem ser salvas na mesma pasta do arquivo.
-* função excel_write: usando a ação de digitar informações novas a função busca a última linha da planilha e vai colando os novos dados extraídos do Excel e PDF seguindo uma certa formatação, na ação de atualizar informações primeiro faz-se um check das informações a serem correspondidas pelas atualizações que são inseridas a seguir.
-* função pdf_reader: lê os PDF's mais padronizados com biblioteca tabula, corrigindo alguns possíveis erros e limpando algumas coisas para entrarem na formatação necessária, e lê os PDF's menos padronizados com a biblioteca PdfReader, buscando os valores em uma string. Movimentações são computadas no script para exibir acumulados com base em uma série de condições (tipo do modal e polo onde ocorrem as movimentações).
-* função excel_reader: lê os arquivos de Excel com uma maior simplicidade do que a função anterior.
+## Approach
+* sap: clicks on specific areas on the screen and types values to navigate a software and obtain Excel spreadsheets that will be read later. These spreadsheets should be saved in the same folder as the file.
+* excel_write: using the action of typing new information, the function searches for the last row of the spreadsheet and pastes the new data extracted from Excel and PDFs, following a certain format. In the action of updating information, a check is first performed to match the data that will be updated afterward.
+* pdf_reader: reads more standardized PDFs using the Tabula library, correcting some potential errors and cleaning things up to fit the necessary format. For less standardized PDFs, the PdfReader library is used to search for values in a string. Movements are calculated in the script to display accumulated data based on several conditions (type of modal and region where movements occur).
+* excel_reader: reads Excel files more simply than the previous function.
 
-## Resultado
+## Results
 ![Final](https://i.imgur.com/KUrXufj.png)
 
