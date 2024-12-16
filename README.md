@@ -1,22 +1,36 @@
-# pdf-and-excel-scraping
+# master_scraper
 
 ## Disclaimer
-It’s not possible to share the PDF and Excel files that this script was fetching, but I can tell you that the files were not clean and lacked standardization, which made the task more complicated than I initially expected.
+It’s not possible to share the PDF and Excel files that this script was using, so I made some examples files to give a demonstration, they can be found in the file's folder. I couldn't make good examples to be used for 2 of the files, so I just commented part of the code and created a variable with what the code would scrape from the PDF. Also made names anonymous, so general understanding of the context may be a little harder.
 
-## Structure
-* `app.py` -> Basic GUI to make running this script more accessible.
-* `script_final.py` -> Does the dirty work
-  * sap(cod): a bot created with PyAutoGUI to generate spreadsheets within a software used to fetch information. The COD variable changes the region to be searched.
-  * excel_write(dic_descarga: dict, action: str): part of the extracted data needed to be inserted into Excel for the first time, while the other part had to be added to already existing information to update it. dic_descarga is a variable with old values and their corresponding updated data. action determines whether the function will only insert new data or check the spreadsheet to update the existing information.
-  * pdf_reader(operador: str): reads and extracts data from PDF. Initially, I tried using read_pdf from the Tabula library and converting it to a DataFrame, but some PDFs didn't extract all the information this way, so I had to use PdfReader and search for values in a huge string. In a scenario with more standardized PDFs, this function could be streamlined a lot.
-  * excel_reader(operador: str): reads and extracts data from Excel files. I used openpyxl without major issues since the spreadsheets were much more standardized and with 'clean' data for extraction.
+## Previously
+![Final](https://i.imgur.com/KUrXufj.png)
+This script was GUI-heavy, with lots of clicks and new windows, and could only run with files from one day, so I just made a new version with a lot less GUI implementation to copy the data quicker into the shared spreadsheet, and made it possible to run a lot of files from different days.
+
+## Task
+Update a shared spreadsheet daily, with data that comes from 5 PDF files and 5 Excel spreadsheets. This update was based on a scheme of product transportation (products X1, Y1 and Y2), monitoring storage and product transportation trips between a few storage spots. Between two specific spots, transport could be done by two modals, A and B, the rest of the spots could only transport in modal A.
+![Scheme](https://i.imgur.com/iiXjSai.png)
+
+The PDF files were very hard to read due to bad formatting and lack of standardization, suddenly changing little things in its format (and sometimes going back on those changes a few days later, I had no control over this). So the code would have to be easy to change, that's also why I made this updated version, relying more on pandas power to manage data, and less in scraping big text strings, with a lot of exceptions and conditions, like the first version.
 
 ## Approach
-* sap: clicks on specific areas on the screen and types values to navigate a software and obtain Excel spreadsheets that will be read later. These spreadsheets should be saved in the same folder as the file.
-* excel_write: using the action of typing new information, the function searches for the last row of the spreadsheet and pastes the new data extracted from Excel and PDFs, following a certain format. In the action of updating information, a check is first performed to match the data that will be updated afterward.
-* pdf_reader: reads more standardized PDFs using the Tabula library, correcting some potential errors and cleaning things up to fit the necessary format. For less standardized PDFs, the PdfReader library is used to search for values in a string. Movements are calculated in the script to display accumulated data based on several conditions (type of modal and region where movements occur).
-* excel_reader: reads Excel files more simply than the previous function.
+There's still a GUI.py, but now there's only a button to read instructions and other to run main.py, so people that don't work with code can run the script without worries. main.py will get variables and file location from file.py and var.py, these variables are structured as DataFrames containg the columns that are also in a model spreadsheet called 'modelo.xlsx', the final place where all the info is going, so the user can easily copy from that spreadsheet into the shared one. This Excel file has sheets for every storage location and one for the transportation trips.
 
-## Results
-![Final](https://i.imgur.com/KUrXufj.png)
+Then main.py starts T1_reader for reading storage files and trips from T1 (these trips had to be made into a variable with the content as I could not replicate the style of the original file), every time the scrip gets a file to read, it annotates its day of reference, so it can organize the day each information is coming from.  T1_reader also reads storage info from T2, as the file is very similar to T1's. Going back to main.py, the info passes through some formatting and transformation. The info from the trips have to be divided into two types of modal (A and B), to enter in different columns of the spreadsheet, as T1's files don't make this distinction.
+
+Finally, main.py calls for T1_insert_reader to read how ongoing trips to T2 ended. This part of the code also has to calculate which trip ended per which modal, getting the total per modal. This part of the code would read the PDF's, but I had the same trouble as trips coming from T1, so just made a variable with the info I need to show how it would extract. Then it opens the model Excel file, to write destination info in the trips that were ongoing but now ended to reach T2.
+
+For the Excel files, first the code reads trips from T2 to S1 and R1 to R2, as they come in the same format. Trips to S1 from T2 had to be deducted separately from the storage info, as they don't detail that there, and the shared spreadsheet needs this info (which portion of trips from T2 went to S1). Then, it ends reading the spreadsheet from R2 with storage and trips from R1, and S1 files for storage and trips from T2. Every time the code looks at ending ongoing trips, it makes the same process described in the end of the last paragraph. Finally, the files as put in a trash folder, so the next time the program runs, there's no repetition of info going into the model spreadsheet.
+
+## Result
+Every white cell is what already was in the sheet, orange cells are what departed from T1 to T2, green cells what departed from R1 to R2, and blue cells what departed from T2 to S1. Grey cells are info from trips that ended on day 13/12 (T1>T2, R1>R2 and T2>S1), purple cells the same but for the 14th day of December.
+
+![Results](https://i.imgur.com/9tgvQ5d.png)
+
+Each storage spot has a sheet with all the storage info extracted from the files and divided per day, now it's only a matter of copying the info into the shared master spreadsheet.
+
+![Results2](https://i.imgur.com/JSGzAlR.png)
+
+
+
 
