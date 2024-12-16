@@ -5,7 +5,7 @@ It’s not possible to share the PDF and Excel files that this script was using,
 
 ## Previously
 ![Final](https://i.imgur.com/KUrXufj.png)
-This script was GUI-heavy, with lots of clicks and new windows, and could only run with files from one day, so I just made a new version with a lot less GUI implementation to copy the data quicker into the shared spreadsheet, and made it possible to run a lot of files from different days.
+I first made this script early this year, and it was was GUI-heavy, with lots of clicks and new windows, and could only run with files from one day, so I just made a new version with a lot less GUI implementation to copy the data quicker into the shared spreadsheet, and made it possible to run a lot of files from different days.
 
 ## Task
 Update a shared spreadsheet daily, with data that comes from 5 PDF files and 5 Excel spreadsheets. This update was based on a scheme of product transportation (products X1, Y1 and Y2), monitoring storage and product transportation trips between a few storage spots. Between two specific spots, transport could be done by two modals, A and B, the rest of the spots could only transport in modal A.
