@@ -3,10 +3,11 @@
 from datetime import datetime
 from datetime import timedelta
 import warnings
+import shutil
 import pandas as pd
 import openpyxl
 from var import registro, T1, T2, R2, S1, R1
-from files import FILES_PDF, FILES_EXCEL, trash
+from files import FILES_PDF, FILES_EXCEL, PATH, trash
 from T1_reader import pdf_reader
 from T1_insert_reader import pdf_excel_reader
 from R1_S1_insert_reader import excel_reader
@@ -76,7 +77,10 @@ def excel_writer(sheetname, df):
                     header=False, index=False, startrow=ind-1)
     writer.close()
 
-
+try:
+    shutil.rmtree(PATH+'\\trash')
+except Exception as e:
+    print(e)
 for i in FILES_PDF:
     result = pdf_reader(i)
     if 'ESTOQUE' in i.upper():
