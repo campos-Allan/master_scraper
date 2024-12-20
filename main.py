@@ -80,9 +80,12 @@ def excel_writer(sheetname, df):
 
 try:
     shutil.rmtree(PATH+'\\trash')
-except Exception as e:
+except PermissionError as e:
     print(e)
-os.mkdir(PATH+'\\trash')
+try:
+    os.mkdir(PATH+'\\trash')
+except FileExistsError as e:
+    print(e)
 for i in FILES_PDF:
     result = pdf_reader(i)
     if 'ESTOQUE' in i.upper():
