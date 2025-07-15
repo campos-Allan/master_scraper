@@ -79,11 +79,11 @@ def excel_writer(sheetname, df):
     writer.close()
 
 try:
-    shutil.rmtree(PATH+'\\trash')
-except PermissionError as e:
+    shutil.rmtree(os.path.join(PATH, 'trash'))
+except (PermissionError, FileNotFoundError) as e:
     print(e)
 try:
-    os.mkdir(PATH+'\\trash')
+    os.mkdir(os.path.join(PATH, 'trash'))
 except FileExistsError as e:
     print(e)
 for i in FILES_PDF:
