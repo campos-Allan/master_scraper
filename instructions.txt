@@ -1,0 +1,16 @@
+1 Output files for R2 and S1 must include 'Basis' in the name, and 'SEN' for arrivals at R2.
+2 T1 files must include 'Estoque' (Stock) and 'Mov' (Movement) in the name.
+3 T2 files must include 'Descarga' (Unload) and 'Saldo' (Balance) in the name.
+4 S1 files must include 'Descarga' (Unload) and 'Abertura' (Opening) in the name.
+5 All files must be placed in the 'files' folder of this executable.
+6 For the program to run, the following must be in the same folder: molde.xlsx, S1_insert_reader, main, T1_insert_reader, T1_reander, S1_insert_reader, var, readme.txt.
+7 Periodically empty the 'trash' folder—used files are moved there.
+8 The final reading result is saved in the 'molde.xlsx' spreadsheet, already formatted for copying into the shared spreadsheet.
+
+HUB NAMES:
+R1 -> R2 (MODAL A)
+T1 -> T2 (MODAL A and B)
+T2 -> S1 (MODAL A)
+
+PRODUCT NAMES:
+X1, Y1, Y2
